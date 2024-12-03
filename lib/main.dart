@@ -19,12 +19,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.black),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
         useMaterial3: true,
       ),
       home: const WidgetTree(),
       routes: {
-        '/Signin': (context) =>  signIn(),
+        '/Signin': (context) => signIn(),
         '/Signup': (context) => const signUp()
       },
     );

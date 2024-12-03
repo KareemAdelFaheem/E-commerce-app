@@ -3,6 +3,7 @@ import 'package:ecommerce/Widgets/inputs/AuthTextField.dart';
 import 'package:ecommerce/extensions/string_extensions.dart';
 import 'package:ecommerce/Pages/signIn.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class signUp extends StatefulWidget {
@@ -18,6 +19,7 @@ class _MyHomePageState extends State<signUp> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmpasswordController =
       TextEditingController();
+  bool isAdmin = false;
 
   @override
   Widget build(BuildContext context) {
@@ -54,11 +56,11 @@ class _MyHomePageState extends State<signUp> {
                           controller: _passwordController,
                           validator: (input) {
                             if (input == null || input.isEmpty) {
-                              return "Password can't be null";
+                              return "Password can't be empty";
                             }
 
                             if (!input.isValidPassword()) {
-                              return "Check you Password";
+                              return "Password length must be at least 6 characters";
                             }
 
                             return null;
@@ -101,8 +103,16 @@ class _MyHomePageState extends State<signUp> {
                                   borderSide: BorderSide.none,
                                   borderRadius: BorderRadius.circular(10))),
                         ),
+                        CheckboxListTile(
+                            title: const Text("Sign up as admin"),
+                            value: isAdmin,
+                            onChanged: (value) {
+                              setState(() {
+                                isAdmin = value!;
+                              });
+                            }),
                         const SizedBox(
-                          height: 70,
+                          height: 50,
                         ),
                         SizedBox(
                           width: 200,
@@ -112,6 +122,7 @@ class _MyHomePageState extends State<signUp> {
                               if (formkey.currentState?.validate() ?? false) {
                                 try {
                                   await Auth().signUp(
+                                    isAdmin: isAdmin,
                                       email: _emailController.text,
                                       password: _passwordController.text);
                                   ScaffoldMessenger.of(context).showSnackBar(

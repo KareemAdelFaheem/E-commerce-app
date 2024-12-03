@@ -1,5 +1,5 @@
 import 'package:ecommerce/Auth.dart';
-import 'package:ecommerce/Homepage.dart';
+import 'package:ecommerce/Pages/Homepage.dart';
 import 'package:ecommerce/Widgets/inputs/AuthTextField.dart';
 import 'package:ecommerce/Pages/signUp.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -72,16 +72,10 @@ class _MyHomePageState extends State<signIn> {
                             onPressed: () async {
                               try {
                                 final userCredential = await Auth().signIn(
+                                  context: context,
                                     email: _emailController.text,
                                     password: _passwordController.text);
-                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                    content: Text(
-                                        "Sign in Done successfully with ${userCredential.user!.email}!")));
-                                Navigator.pushAndRemoveUntil(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => const HomePage()),
-                                    (Route<dynamic> route) => false);
+                                
                               } on FirebaseAuthException catch (e) {
                                 String errorMessage = '';
                                 if (e.code == 'invalid-credential') {
