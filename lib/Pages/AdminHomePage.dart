@@ -65,7 +65,7 @@ class _MyHomePageState extends State<Adminhomepage> {
   }
 
   void listenForProductChanges(String categoryKey) {
-    if (categoryKey.isEmpty) return; // Ensure a valid category key is provided.
+    if (categoryKey.isEmpty) return;
 
     final DatabaseReference productsRef = FirebaseDatabase.instance
         .ref()
@@ -73,7 +73,6 @@ class _MyHomePageState extends State<Adminhomepage> {
         .child(categoryKey)
         .child("products");
 
-    // Listen for product changes (added, updated, deleted).
     productsRef.onValue.listen((event) {
       final data = event.snapshot.value as Map?;
 
@@ -309,13 +308,120 @@ class _MyHomePageState extends State<Adminhomepage> {
                           itemCount: products.length,
                           itemBuilder: (context, index) {
                             final product = products[index];
-                            return ProductItem(
-                                catekey: selectedCategoryKey!,
-                                image: "assets/images/capp1.png",
-                                title: selectedCategoryName!,
-                                subtitle: product['name'],
-                                prokey: product['key'],
-                                price: "${product['price']}");
+                            return
+                                //  ProductItem(
+                                //     catekey: selectedCategoryKey!,
+                                //     image: "assets/images/capp1.png",
+                                //     title: selectedCategoryName!,
+                                //     subtitle: product['name'],
+                                //     prokey: product['key'],
+                                //     price: "${product['price']}");
+
+                                GestureDetector(
+                              onTap: () {
+                                print("pressed pro");
+                                showDialog(
+                                    context: context,
+                                    builder: (_) => showUpdateProductDialog(
+                                          categoryKey: selectedCategoryKey!,
+                                          productKey: product['key'],
+                                        ));
+                              },
+                              child: Container(
+                                margin: const EdgeInsets.only(right: 20),
+                                height: 300,
+                                width: 200,
+                                child: Container(
+                                  padding: const EdgeInsets.all(15),
+                                  decoration: BoxDecoration(
+                                      color: AppColors.productContainerColor,
+                                      borderRadius: BorderRadius.circular(29)),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Image.asset(
+                                        "assets/images/capp1.png",
+                                        scale: 1,
+                                      ),
+                                      const SizedBox(
+                                        width: 20,
+                                      ),
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 6.0),
+                                        child: Text(
+                                          selectedCategoryName!,
+                                          style: const TextStyle(
+                                              fontFamily: "poppins",
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 20),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 6.0),
+                                        child: Text(
+                                          product['name'],
+                                          style: const TextStyle(
+                                              fontFamily: "poppins",
+                                              color: Color.fromRGBO(
+                                                  255, 255, 255, 0.51),
+                                              fontWeight: FontWeight.w400,
+                                              fontSize: 14),
+                                        ),
+                                      ),
+                                      Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                left: 6.0),
+                                            child: Row(
+                                              children: [
+                                                Text("\$",
+                                                    style: TextStyle(
+                                                        fontFamily: "poppins",
+                                                        color: AppColors
+                                                            .primaryColor,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        fontSize: 16)),
+                                                const SizedBox(
+                                                  width: 4,
+                                                ),
+                                                Text(
+                                                  "${product['price']}",
+                                                  style: const TextStyle(
+                                                      fontFamily: "poppins",
+                                                      color: Colors.white,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      fontSize: 16),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          IconButton(
+                                            onPressed: () {
+                                              Databaseservice().deleteProduct(
+                                                  selectedCategoryKey!,
+                                                  product['key']);
+                                            },
+                                            icon: const Icon(Icons.delete),
+                                            color: Colors.white,
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
                           }),
                 ),
                 const SizedBox(
@@ -392,122 +498,121 @@ class _MyHomePageState extends State<Adminhomepage> {
   }
 }
 
-class ProductItem extends StatelessWidget {
-  final String catekey;
-  final String prokey;
-  final String image;
-  final String title;
-  final String subtitle;
-  final String price;
+// class ProductItem extends StatelessWidget {
+//   final String catekey;
+//   final String prokey;
+//   final String image;
+//   final String title;
+//   final String subtitle;
+//   final String price;
 
-  const ProductItem({
-    super.key,
-    required this.image,
-    required this.title,
-    required this.subtitle,
-    required this.price,
-    required this.catekey,
-    required this.prokey,
-  });
-  
+//   const ProductItem({
+//     super.key,
+//     required this.image,
+//     required this.title,
+//     required this.subtitle,
+//     required this.price,
+//     required this.catekey,
+//     required this.prokey,
+//   });
 
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        print("pressed pro");
-        showDialog(
-            context: context,
-            builder: (_) => showUpdateProductDialog(
-                  categoryKey: catekey,
-                  productKey: prokey,
-                ));
-      },
-      child: Container(
-        margin: const EdgeInsets.only(right: 20),
-        height: 300,
-        width: 200,
-        child: Container(
-          padding: const EdgeInsets.all(15),
-          decoration: BoxDecoration(
-              color: AppColors.productContainerColor,
-              borderRadius: BorderRadius.circular(29)),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Image.asset(
-                image,
-                scale: 1,
-              ),
-              const SizedBox(
-                width: 20,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 6.0),
-                child: Text(
-                  title,
-                  style: const TextStyle(
-                      fontFamily: "poppins",
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 20),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 6.0),
-                child: Text(
-                  subtitle,
-                  style: const TextStyle(
-                      fontFamily: "poppins",
-                      color: Color.fromRGBO(255, 255, 255, 0.51),
-                      fontWeight: FontWeight.w400,
-                      fontSize: 14),
-                ),
-              ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 6.0),
-                    child: Row(
-                      children: [
-                        Text("\$",
-                            style: TextStyle(
-                                fontFamily: "poppins",
-                                color: AppColors.primaryColor,
-                                fontWeight: FontWeight.w500,
-                                fontSize: 16)),
-                        const SizedBox(
-                          width: 4,
-                        ),
-                        Text(
-                          price,
-                          style: const TextStyle(
-                              fontFamily: "poppins",
-                              color: Colors.white,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 16),
-                        ),
-                      ],
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      Databaseservice().deleteProduct(catekey, prokey);
-                    },
-                    icon: const Icon(Icons.delete),
-                    color: Colors.white,
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return GestureDetector(
+//       onTap: () {
+//         print("pressed pro");
+//         showDialog(
+//             context: context,
+//             builder: (_) => showUpdateProductDialog(
+//                   categoryKey: catekey,
+//                   productKey: prokey,
+//                 ));
+//       },
+//       child: Container(
+//         margin: const EdgeInsets.only(right: 20),
+//         height: 300,
+//         width: 200,
+//         child: Container(
+//           padding: const EdgeInsets.all(15),
+//           decoration: BoxDecoration(
+//               color: AppColors.productContainerColor,
+//               borderRadius: BorderRadius.circular(29)),
+//           child: Column(
+//             crossAxisAlignment: CrossAxisAlignment.start,
+//             children: [
+//               Image.asset(
+//                 image,
+//                 scale: 1,
+//               ),
+//               const SizedBox(
+//                 width: 20,
+//               ),
+//               Padding(
+//                 padding: const EdgeInsets.only(left: 6.0),
+//                 child: Text(
+//                   title,
+//                   style: const TextStyle(
+//                       fontFamily: "poppins",
+//                       color: Colors.white,
+//                       fontWeight: FontWeight.w600,
+//                       fontSize: 20),
+//                 ),
+//               ),
+//               Padding(
+//                 padding: const EdgeInsets.only(left: 6.0),
+//                 child: Text(
+//                   subtitle,
+//                   style: const TextStyle(
+//                       fontFamily: "poppins",
+//                       color: Color.fromRGBO(255, 255, 255, 0.51),
+//                       fontWeight: FontWeight.w400,
+//                       fontSize: 14),
+//                 ),
+//               ),
+//               Row(
+//                 crossAxisAlignment: CrossAxisAlignment.center,
+//                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                 children: [
+//                   Padding(
+//                     padding: const EdgeInsets.only(left: 6.0),
+//                     child: Row(
+//                       children: [
+//                         Text("\$",
+//                             style: TextStyle(
+//                                 fontFamily: "poppins",
+//                                 color: AppColors.primaryColor,
+//                                 fontWeight: FontWeight.w500,
+//                                 fontSize: 16)),
+//                         const SizedBox(
+//                           width: 4,
+//                         ),
+//                         Text(
+//                           price,
+//                           style: const TextStyle(
+//                               fontFamily: "poppins",
+//                               color: Colors.white,
+//                               fontWeight: FontWeight.w500,
+//                               fontSize: 16),
+//                         ),
+//                       ],
+//                     ),
+//                   ),
+//                   IconButton(
+//                     onPressed: () {
+//                       Databaseservice().deleteProduct(catekey, prokey);
+//                     },
+//                     icon: const Icon(Icons.delete),
+//                     color: Colors.white,
+//                   ),
+//                 ],
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 class showAddProductDialog extends StatefulWidget {
   final String categoryKey;
