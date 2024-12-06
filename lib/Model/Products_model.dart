@@ -11,7 +11,7 @@ class Product {
     String description;
     Category category;
     String image;
-    Rating rating;
+   
 
     Product({
         required this.id,
@@ -20,7 +20,7 @@ class Product {
         required this.description,
         required this.category,
         required this.image,
-        required this.rating,
+      
     });
 
     factory Product.fromJson(Map<String, dynamic> json) => Product(
@@ -30,7 +30,6 @@ class Product {
         description: json["description"],
         category: categoryValues.map[json["category"]]!,
         image: json["image"],
-        rating: Rating.fromJson(json["rating"]),
     );
 
     Map<String, dynamic> toJson() => {
@@ -40,7 +39,6 @@ class Product {
         "description": description,
         "category": categoryValues.reverse[category],
         "image": image,
-        "rating": rating.toJson(),
     };
 }
 

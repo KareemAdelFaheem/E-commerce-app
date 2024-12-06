@@ -99,120 +99,102 @@ class _MyHomePageState extends State<HomePage> {
                           color: AppColors.textFieldHintColor)),
                 ),
               ),
-              CategoryItem(
-                name: " Espresso",
-                color: AppColors.enabledCateogryColor,
+              const SizedBox(
+                height: 10,
               ),
-              Container(
-                padding: const EdgeInsets.all(15),
-                decoration: BoxDecoration(
-                    color: AppColors.productContainerColor,
-                    borderRadius: BorderRadius.circular(29)),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Image.asset(
-                      "assets/images/capp1.png",
-                      scale: 3,
-                    ),
-                    const SizedBox(
-                      width: 20,
-                    ),
-                    const Text(
-                      "5 Coffee beans for you\nMust try",
-                      style: TextStyle(
-                          fontFamily: "poppins",
-                          color: Colors.white,
-                          fontSize: 15),
-                    )
-                  ],
-                ),
+              SizedBox(
+                height: 100,
+                child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: 3,
+                    itemBuilder: (context, index) {
+                      return const Row(
+                        children: [
+                          CategoryItem(name: "Espresso"),
+                        ],
+                      );
+                    }),
               ),
+              const SizedBox(
+                height: 20,
+              ),
+              SizedBox(
+                height: 300,
+                child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: 3,
+                    itemBuilder: (context, index) {
+                      return const Row(
+                        children: [
+                          ProductItem(
+                              image: "assets/images/capp1.png",
+                              title: "Cappuccino",
+                              subtitle: "With Oat Milk",
+                              price: "4.20"),
+                          SizedBox(
+                            width: 20,
+                          ),
+                          ProductItem(
+                              image: "assets/images/capp2.png",
+                              title: "Cappuccino",
+                              subtitle: "With Chocolate",
+                              price: "3.14"),
+                          SizedBox(
+                            width: 20,
+                          )
+                        ],
+                      );
+                    }),
+              ),
+
+              // const Text(
+              //   "Special For you",
+              //   style: TextStyle(
+              //       color: Colors.white,
+              //       fontFamily: "poppins",
+              //       fontSize: 16,
+              //       fontWeight: FontWeight.w700),
+              // ),
+              // const SizedBox(
+              //   height: 10,
+              // ),
+              // Container(
+              //   padding: const EdgeInsets.all(15),
+              //   decoration: BoxDecoration(
+              //       color: AppColors.productContainerColor,
+              //       borderRadius: BorderRadius.circular(29)),
+              //   child: Row(
+              //     crossAxisAlignment: CrossAxisAlignment.start,
+              //     children: [
+              //       Image.asset(
+              //         "assets/images/capp1.png",
+              //         scale: 3,
+              //       ),
+              //       const SizedBox(
+              //         width: 20,
+              //       ),
+              //       const Text(
+              //         "5 Coffee beans for you\nMust try",
+              //         style: TextStyle(
+              //             fontFamily: "poppins",
+              //             color: Colors.white,
+              //             fontSize: 15),
+              //       )
+              //     ],
+              //   ),
+              // ),
             ],
           ),
         ));
   }
 }
 
-class ProductItem extends StatelessWidget {
-  final Product product;
-  const ProductItem({
-    super.key,
-    required this.product,
-  });
 
-  @override
-  Widget build(BuildContext context) {
-    double deviceWidth = MediaQuery.sizeOf(context).width;
-    double deviceHeight = MediaQuery.sizeOf(context).height;
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10),
-      child: Card(
-        elevation: 2,
-        color: Colors.white,
-        child: SizedBox(
-          height: deviceHeight * 0.36,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.network(
-                  product.image,
-                  scale: 8,
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Text(product.title),
-                const SizedBox(
-                  height: 10,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 3),
-                      height: 25,
-                      width: 55,
-                      decoration: BoxDecoration(
-                          color: Colors.green,
-                          borderRadius: BorderRadius.circular(10)),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Text("${product.rating.rate}"),
-                          const Icon(
-                            Icons.star,
-                            size: 17,
-                          )
-                        ],
-                      ),
-                    ),
-                    Text(product.category.name)
-                  ],
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  "${product.price} LE",
-                  style: const TextStyle(
-                      fontSize: 20, fontWeight: FontWeight.bold),
-                )
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 class CategoryItem extends StatelessWidget {
   final String name;
-  final Color color;
-  const CategoryItem({super.key, required this.name, required this.color});
+
+  const CategoryItem({super.key, required this.name});
 
   @override
   Widget build(BuildContext context) {
@@ -226,8 +208,111 @@ class CategoryItem extends StatelessWidget {
                   child: Text(
                     name,
                     style: TextStyle(
-                        color: color, fontFamily: "poppins", fontSize: 16),
+                        color: AppColors.disabledCategoryColor, fontFamily: "poppins", fontSize: 16),
                   )))),
+    );
+  }
+}
+
+class ProductItem extends StatelessWidget {
+  final String image;
+  final String title;
+  final String subtitle;
+  final String price;
+
+  const ProductItem(
+      {super.key,
+      required this.image,
+      required this.title,
+      required this.subtitle,
+      required this.price});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 300,
+      width: 200,
+      child: Container(
+        padding: const EdgeInsets.all(15),
+        decoration: BoxDecoration(
+            color: AppColors.productContainerColor,
+            borderRadius: BorderRadius.circular(29)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Image.asset(
+              image,
+              scale: 1,
+            ),
+            const SizedBox(
+              width: 20,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 6.0),
+              child: Text(
+                title,
+                style: const TextStyle(
+                    fontFamily: "poppins",
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 20),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 6.0),
+              child: Text(
+                subtitle,
+                style: const TextStyle(
+                    fontFamily: "poppins",
+                    color: Color.fromRGBO(255, 255, 255, 0.51),
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14),
+              ),
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 6.0),
+                  child: Row(
+                    children: [
+                      Text("\$",
+                          style: TextStyle(
+                              fontFamily: "poppins",
+                              color: AppColors.primaryColor,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 16)),
+                      const SizedBox(
+                        width: 4,
+                      ),
+                      Text(
+                        price,
+                        style: const TextStyle(
+                            fontFamily: "poppins",
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 16),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  height: 34,
+                  width: 36,
+                  decoration: BoxDecoration(
+                      color: AppColors.primaryColor,
+                      borderRadius: BorderRadius.circular(10)),
+                  child: const Icon(
+                    Icons.add,
+                    color: Colors.black,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
