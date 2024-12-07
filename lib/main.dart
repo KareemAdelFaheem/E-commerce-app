@@ -1,3 +1,4 @@
+import 'package:ecommerce/Pages/ProductDetails.dart';
 import 'package:ecommerce/Pages/signIn.dart';
 import 'package:ecommerce/Pages/signUp.dart';
 import 'package:ecommerce/widget_tree.dart';
@@ -22,6 +23,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: const WidgetTree(),
+      // home: const ProductDetails(),
       routes: {
         '/Signin': (context) => signIn(),
         '/Signup': (context) => const signUp()

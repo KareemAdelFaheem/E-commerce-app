@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ecommerce/Pages/AdminHomePage.dart';
+import 'package:ecommerce/Pages/BottomNavigationBar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'Auth.dart';
@@ -44,11 +45,11 @@ class _WidgetTreeState extends State<WidgetTree>  {
                 if (userRole == 'admin') {
                   return Adminhomepage(); // Navigate to Admin homepage
                 } else {
-                  return HomePage(); // Navigate to User homepage
+                  return MyBottomNavigationBar(); // Navigate to User homepage
                 }
               } else {
                 // If no role is found, return the user homepage by default
-                return HomePage();
+                return MyBottomNavigationBar();
               }
             },
           );
