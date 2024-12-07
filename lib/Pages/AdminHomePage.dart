@@ -11,6 +11,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class Adminhomepage extends StatefulWidget {
   const Adminhomepage({super.key});
@@ -55,6 +56,7 @@ class _MyHomePageState extends State<Adminhomepage> {
           // selectedCategoryKey = categories.first['key'];
         }
         isLoading = false;
+       
       });
     } catch (e) {
       setState(() {
@@ -334,7 +336,14 @@ class _MyHomePageState extends State<Adminhomepage> {
                                 child: Container(
                                   padding: const EdgeInsets.all(15),
                                   decoration: BoxDecoration(
-                                      color: AppColors.productContainerColor,
+                                      gradient: const LinearGradient(
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                          tileMode: TileMode.mirror,
+                                          colors: <Color>[
+                                            Color.fromRGBO(56, 55, 55, 1.0),
+                                            Color.fromRGBO(17, 16, 16, 0.99),
+                                          ]),
                                       borderRadius: BorderRadius.circular(29)),
                                   child: Column(
                                     crossAxisAlignment:
@@ -406,14 +415,41 @@ class _MyHomePageState extends State<Adminhomepage> {
                                               ],
                                             ),
                                           ),
-                                          IconButton(
-                                            onPressed: () {
-                                              Databaseservice().deleteProduct(
-                                                  selectedCategoryKey!,
-                                                  product['key']);
-                                            },
-                                            icon: const Icon(Icons.delete),
-                                            color: Colors.white,
+                                          product['rate'] != null
+                                              ? Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    const Icon(
+                                                      Icons.star,
+                                                      color: Colors.white,
+                                                    ),
+                                                    const SizedBox(
+                                                      width: 5,
+                                                    ),
+                                                    Text(
+                                                      product['rate'],
+                                                      style: const TextStyle(
+                                                          color: Colors.yellow),
+                                                    ),
+                                                  ],
+                                                )
+                                              : const Text(
+                                                  "  No Ratings",
+                                                  style: TextStyle(
+                                                      color: Colors.yellow),
+                                                ),
+                                          Expanded(
+                                            child: IconButton(
+                                              onPressed: () {
+                                                Databaseservice().deleteProduct(
+                                                    selectedCategoryKey!,
+                                                    product['key']);
+                                              },
+                                              icon: const Icon(Icons.delete),
+                                              color: Colors.white,
+                                            ),
                                           ),
                                         ],
                                       ),
@@ -454,165 +490,12 @@ class _MyHomePageState extends State<Adminhomepage> {
                           }
                         },
                         icon: const Icon(Icons.add))),
-
-                // const Text(
-                //   "Special For you",
-                //   style: TextStyle(
-                //       color: Colors.white,
-                //       fontFamily: "poppins",
-                //       fontSize: 16,
-                //       fontWeight: FontWeight.w700),
-                // ),
-                // const SizedBox(
-                //   height: 10,
-                // ),
-                // Container(
-                //   padding: const EdgeInsets.all(15),
-                //   decoration: BoxDecoration(
-                //       color: AppColors.productContainerColor,
-                //       borderRadius: BorderRadius.circular(29)),
-                //   child: Row(
-                //     crossAxisAlignment: CrossAxisAlignment.start,
-                //     children: [
-                //       Image.asset(
-                //         "assets/images/capp1.png",
-                //         scale: 3,
-                //       ),
-                //       const SizedBox(
-                //         width: 20,
-                //       ),
-                //       const Text(
-                //         "5 Coffee beans for you\nMust try",
-                //         style: TextStyle(
-                //             fontFamily: "poppins",
-                //             color: Colors.white,
-                //             fontSize: 15),
-                //       )
-                //     ],
-                //   ),
-                // ),
               ],
             ),
           ),
         ));
   }
 }
-
-// class ProductItem extends StatelessWidget {
-//   final String catekey;
-//   final String prokey;
-//   final String image;
-//   final String title;
-//   final String subtitle;
-//   final String price;
-
-//   const ProductItem({
-//     super.key,
-//     required this.image,
-//     required this.title,
-//     required this.subtitle,
-//     required this.price,
-//     required this.catekey,
-//     required this.prokey,
-//   });
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return GestureDetector(
-//       onTap: () {
-//         print("pressed pro");
-//         showDialog(
-//             context: context,
-//             builder: (_) => showUpdateProductDialog(
-//                   categoryKey: catekey,
-//                   productKey: prokey,
-//                 ));
-//       },
-//       child: Container(
-//         margin: const EdgeInsets.only(right: 20),
-//         height: 300,
-//         width: 200,
-//         child: Container(
-//           padding: const EdgeInsets.all(15),
-//           decoration: BoxDecoration(
-//               color: AppColors.productContainerColor,
-//               borderRadius: BorderRadius.circular(29)),
-//           child: Column(
-//             crossAxisAlignment: CrossAxisAlignment.start,
-//             children: [
-//               Image.asset(
-//                 image,
-//                 scale: 1,
-//               ),
-//               const SizedBox(
-//                 width: 20,
-//               ),
-//               Padding(
-//                 padding: const EdgeInsets.only(left: 6.0),
-//                 child: Text(
-//                   title,
-//                   style: const TextStyle(
-//                       fontFamily: "poppins",
-//                       color: Colors.white,
-//                       fontWeight: FontWeight.w600,
-//                       fontSize: 20),
-//                 ),
-//               ),
-//               Padding(
-//                 padding: const EdgeInsets.only(left: 6.0),
-//                 child: Text(
-//                   subtitle,
-//                   style: const TextStyle(
-//                       fontFamily: "poppins",
-//                       color: Color.fromRGBO(255, 255, 255, 0.51),
-//                       fontWeight: FontWeight.w400,
-//                       fontSize: 14),
-//                 ),
-//               ),
-//               Row(
-//                 crossAxisAlignment: CrossAxisAlignment.center,
-//                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                 children: [
-//                   Padding(
-//                     padding: const EdgeInsets.only(left: 6.0),
-//                     child: Row(
-//                       children: [
-//                         Text("\$",
-//                             style: TextStyle(
-//                                 fontFamily: "poppins",
-//                                 color: AppColors.primaryColor,
-//                                 fontWeight: FontWeight.w500,
-//                                 fontSize: 16)),
-//                         const SizedBox(
-//                           width: 4,
-//                         ),
-//                         Text(
-//                           price,
-//                           style: const TextStyle(
-//                               fontFamily: "poppins",
-//                               color: Colors.white,
-//                               fontWeight: FontWeight.w500,
-//                               fontSize: 16),
-//                         ),
-//                       ],
-//                     ),
-//                   ),
-//                   IconButton(
-//                     onPressed: () {
-//                       Databaseservice().deleteProduct(catekey, prokey);
-//                     },
-//                     icon: const Icon(Icons.delete),
-//                     color: Colors.white,
-//                   ),
-//                 ],
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
 
 class showAddProductDialog extends StatefulWidget {
   final String categoryKey;
@@ -624,19 +507,31 @@ class showAddProductDialog extends StatefulWidget {
 
 class _MyWidgetState extends State<showAddProductDialog> {
   File? _selectedImage;
+  Future<bool> requestGalleryPermission() async {
+    PermissionStatus status;
+    if (await Permission.photos.isGranted ||
+        await Permission.photos.isLimited) {
+      return true;
+    }
+    status = await Permission.photos.request();
+    return status.isGranted || status.isLimited;
+  }
+
   Future<void> _pickImageFromGallery() async {
-    try {
-      final pickedImage =
-          await ImagePicker().pickImage(source: ImageSource.gallery);
-      if (pickedImage != null) {
-        setState(() {
-          _selectedImage = File(pickedImage.path);
-        });
-      } else {
-        print("No image selected.");
+    if (await requestGalleryPermission()) {
+      try {
+        final pickedImage =
+            await ImagePicker().pickImage(source: ImageSource.gallery);
+        if (pickedImage != null) {
+          setState(() {
+            _selectedImage = File(pickedImage.path);
+          });
+        } else {
+          print("No image selected.");
+        }
+      } catch (e) {
+        print("Error picking image: $e");
       }
-    } catch (e) {
-      print("Error picking image: $e");
     }
   }
 
@@ -662,6 +557,8 @@ class _MyWidgetState extends State<showAddProductDialog> {
     TextEditingController addProductPriceController = TextEditingController();
     TextEditingController addProductStockController = TextEditingController();
     TextEditingController addProductBarcodeController = TextEditingController();
+    TextEditingController addProductDescritpionController =
+        TextEditingController();
     return SingleChildScrollView(
       child: AlertDialog(
         backgroundColor: Colors.black,
@@ -670,7 +567,8 @@ class _MyWidgetState extends State<showAddProductDialog> {
           style: TextStyle(color: AppColors.primaryColor),
         ),
         content: SizedBox(
-          height: 500,
+          height: 800,
+          width: (MediaQuery.sizeOf(context).width),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -771,6 +669,21 @@ class _MyWidgetState extends State<showAddProductDialog> {
                   labelStyle: const TextStyle(color: Colors.white),
                 ),
               ),
+              TextField(
+                maxLines: 5,
+                controller: addProductDescritpionController,
+                cursorColor: AppColors.primaryColor,
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: AppColors.textFieldFillColor,
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                      borderSide: BorderSide.none),
+                  hintText: "Description",
+                  labelStyle: const TextStyle(color: Colors.white),
+                ),
+              ),
             ],
           ),
         ),
@@ -784,12 +697,12 @@ class _MyWidgetState extends State<showAddProductDialog> {
                     addProductStockController.text.isNotEmpty &&
                     addProductBarcodeController.text.isNotEmpty) {
                   Databaseservice().addProduct(
-                    widget.categoryKey,
-                    addProductNameController.text,
-                    addProductPriceController.text,
-                    stock,
-                    addProductBarcodeController.text,
-                  );
+                      widget.categoryKey,
+                      addProductNameController.text,
+                      addProductPriceController.text,
+                      stock,
+                      addProductBarcodeController.text,
+                      addProductDescritpionController.text);
 
                   Navigator.pop(context);
                 }
