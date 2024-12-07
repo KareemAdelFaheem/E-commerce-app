@@ -9,6 +9,51 @@ import 'package:firebase_core/firebase_core.dart';
 class Databaseservice {
   final _real = FirebaseDatabase.instance;
   final DatabaseReference _dbref = FirebaseDatabase.instance.ref();
+
+  Future<List<Product>> getAllProducts() async {
+    try {
+      final DatabaseReference databaseRef =
+          FirebaseDatabase.instance.ref().child(AppStrings.chilCategory);
+
+      final snapshot = await databaseRef.get();
+
+      if (snapshot.value != null) {
+        final data = snapshot.value as Map;
+
+        List<Product> allProducts = [];
+        data.forEach((categoryKey, categoryData) {
+          final categoryMap = Map<String, dynamic>.from(categoryData);
+          if (categoryMap[AppStrings.chilpRODUCT] != null) {
+            final productsMap =
+                Map<String, dynamic>.from(categoryMap[AppStrings.chilpRODUCT]);
+            productsMap.forEach((productKey, productData) {
+              final productMap = Map<String, dynamic>.from(productData);
+              allProducts.add(
+                Product(
+                  title: productMap['name'] ?? '',
+                  price: productMap['price'] ?? 0.0,
+                  description: productMap['description'] ?? '',
+                  category: categoryMap['name'], 
+                  image: productMap['image'] ?? '',
+                  barcode:
+                      productMap['barcode'], 
+                  stock: productMap['stock'], 
+                ),
+              );
+            });
+          }
+        });
+
+        return allProducts;
+      } else {
+        return [];
+      }
+    } catch (e) {
+      print("Error fetching all products: $e");
+      rethrow;
+    }
+  }
+
   Future<List<Map<String, dynamic>>> getProducts(String categoryKey) async {
     try {
       final DatabaseReference databaseRef = FirebaseDatabase.instance
@@ -126,7 +171,7 @@ class Databaseservice {
   }
 
   void addProduct(String categoryKey, String productName, String price,
-      int stock, String barCode) async {
+      int stock, String barCode, String desc) async {
     try {
       String productKey = _real
               .ref(AppStrings.chilCategory)
@@ -146,7 +191,8 @@ class Databaseservice {
         "name": productName, // Product details
         "price": price,
         "stock": stock,
-        "barcode": barCode
+        "barcode": barCode,
+        "description": desc,
       });
       print("Product added successfully!");
     } catch (e) {

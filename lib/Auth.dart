@@ -1,4 +1,5 @@
 import 'package:ecommerce/Pages/AdminHomePage.dart';
+import 'package:ecommerce/Pages/BottomNavigationBar.dart';
 import 'package:ecommerce/Pages/Homepage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -37,7 +38,7 @@ class Auth {
         // Navigate to user page
         Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => const HomePage()),
+            MaterialPageRoute(builder: (context) => const MyBottomNavigationBar()),
             (Route<dynamic> route) => false);
       }
     } catch (e) {
