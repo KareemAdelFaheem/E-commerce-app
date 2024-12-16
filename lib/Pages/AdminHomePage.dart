@@ -53,7 +53,7 @@ class _MyHomePageState extends State<Adminhomepage> {
       setState(() {
         categories = data;
         if (categories.isNotEmpty) {
-          // selectedCategoryKey = categories.first['key'];
+          selectedCategoryKey = categories.first['key'];
         }
         isLoading = false;
        

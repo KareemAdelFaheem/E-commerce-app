@@ -65,7 +65,11 @@ class _MyHomePageState extends State<HomePage> {
       final data = await _firebaseService.getCategories();
       setState(() {
         categories = data;
-        if (categories.isNotEmpty) {}
+        if (categories.isNotEmpty) {
+          selectedCategoryKey = categories.first['key'];
+          selectedCategoryName = categories.first['name'];
+          fetchProducts(selectedCategoryKey!);
+        }
         isLoading = false;
       });
     } catch (e) {
@@ -239,7 +243,8 @@ class _MyHomePageState extends State<HomePage> {
                                           MaterialPageRoute(
                                               builder: (context) =>
                                                   ProductDetails(
-                                                    category: selectedCategoryName!,
+                                                    category:
+                                                        selectedCategoryName!,
                                                     name: product['name'],
                                                     stock: product['stock'],
                                                     price: product['price'],
@@ -369,6 +374,23 @@ class _MyHomePageState extends State<HomePage> {
                                                             color:
                                                                 Colors.yellow),
                                                       ),
+                                                Expanded(
+                                                  child: IconButton(
+                                                    onPressed: () {
+                                                      Auth().addToCart(
+                                                          context,
+                                                          FirebaseAuth.instance
+                                                              .currentUser!,
+                                                          selectedCategoryName!,
+                                                          product['name'],
+                                                          product['price'],1);
+                                                    },
+                                                    icon: const Icon(
+                                                        size: 30,
+                                                        Icons
+                                                            .add_shopping_cart),
+                                                  ),
+                                                ),
                                               ],
                                             ),
                                           ],
