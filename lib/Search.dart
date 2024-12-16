@@ -73,7 +73,7 @@ class ProductSearchDelegate extends SearchDelegate<Product> {
             Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => BarcodeScannerScreen()));
           },
-          icon: const Icon(Icons.qr_code_scanner)),
+          icon: const Icon(Icons.barcode_reader)),
     ];
   }
 
