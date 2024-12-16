@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ecommerce/Model/Products_model.dart';
 import 'package:ecommerce/Widgets/String.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -10,6 +11,7 @@ class Databaseservice {
   final _real = FirebaseDatabase.instance;
   final DatabaseReference _dbref = FirebaseDatabase.instance.ref();
 
+ 
   Future<List<Product>> getAllProducts() async {
     try {
       final DatabaseReference databaseRef =
@@ -33,11 +35,10 @@ class Databaseservice {
                   title: productMap['name'] ?? '',
                   price: productMap['price'] ?? 0.0,
                   description: productMap['description'] ?? '',
-                  category: categoryMap['name'], 
+                  category: categoryMap['name'],
                   image: productMap['image'] ?? '',
-                  barcode:
-                      productMap['barcode'], 
-                  stock: productMap['stock'], 
+                  barcode: productMap['barcode'],
+                  stock: productMap['stock'],
                 ),
               );
             });
