@@ -1,5 +1,6 @@
 import 'package:ecommerce/Auth.dart';
 import 'package:ecommerce/Widgets/inputs/AuthTextField.dart';
+import 'package:ecommerce/Widgets/inputs/Colors.dart';
 import 'package:ecommerce/extensions/string_extensions.dart';
 import 'package:ecommerce/Pages/signIn.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -24,6 +25,7 @@ class _MyHomePageState extends State<signUp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       body: SingleChildScrollView(
         child: Center(
           child: Padding(
@@ -31,14 +33,26 @@ class _MyHomePageState extends State<signUp> {
             child: Column(
               children: <Widget>[
                 const SizedBox(
-                  height: 180,
+                  height: 130,
                 ),
-                const Text(
-                  "Ecommerce",
-                  style: TextStyle(fontSize: 50, fontWeight: FontWeight.w900),
+                SizedBox(child: Image.asset("assets/images/login.png")),
+                const SizedBox(
+                  height: 50,
+                ),
+                const Row(
+                  children: [
+                    Text(
+                      "Sign Up",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontFamily: "poppinslight",
+                          fontWeight: FontWeight.w600),
+                    ),
+                  ],
                 ),
                 const SizedBox(
-                  height: 70,
+                  height: 10,
                 ),
                 Form(
                     key: formkey,
@@ -53,6 +67,8 @@ class _MyHomePageState extends State<signUp> {
                           height: 20,
                         ),
                         TextFormField(
+                          style: const TextStyle(
+                              color: Colors.white, fontFamily: "poppinslight"),
                           controller: _passwordController,
                           validator: (input) {
                             if (input == null || input.isEmpty) {
@@ -69,17 +85,22 @@ class _MyHomePageState extends State<signUp> {
                           keyboardType: TextInputType.visiblePassword,
                           decoration: InputDecoration(
                               filled: true,
-                              fillColor: Colors.grey[200],
+                              fillColor: Colors.black,
                               hintText: "Enter Password",
-                              hintStyle: TextStyle(color: Colors.grey[800]),
+                              hintStyle: const TextStyle(
+                                color: Color.fromRGBO(179, 179, 179, 1),
+                                fontFamily: "poppinslight",
+                              ),
                               border: OutlineInputBorder(
-                                  borderSide: BorderSide.none,
-                                  borderRadius: BorderRadius.circular(10))),
+                                  // borderSide: BorderSide.none,
+                                  borderRadius: BorderRadius.circular(5))),
                         ),
                         const SizedBox(
                           height: 20,
                         ),
                         TextFormField(
+                          style: const TextStyle(
+                              color: Colors.white, fontFamily: "poppinslight"),
                           controller: _confirmpasswordController,
                           validator: (input) {
                             if (input == null || input.isEmpty) {
@@ -96,15 +117,22 @@ class _MyHomePageState extends State<signUp> {
                           keyboardType: TextInputType.visiblePassword,
                           decoration: InputDecoration(
                               filled: true,
-                              fillColor: Colors.grey[200],
+                              fillColor: Colors.black,
                               hintText: "Confirm Password",
-                              hintStyle: TextStyle(color: Colors.grey[800]),
+                              hintStyle: const TextStyle(
+                                color: Color.fromRGBO(179, 179, 179, 1),
+                                fontFamily: "poppinslight",
+                              ),
                               border: OutlineInputBorder(
-                                  borderSide: BorderSide.none,
-                                  borderRadius: BorderRadius.circular(10))),
+                                  borderRadius: BorderRadius.circular(5))),
                         ),
                         CheckboxListTile(
-                            title: const Text("Sign up as admin"),
+                            title: Text(
+                              "Sign up as admin",
+                              style: TextStyle(
+                                  fontFamily: "poppinslight",
+                                  color: AppColors.disabledCategoryColor),
+                            ),
                             value: isAdmin,
                             onChanged: (value) {
                               setState(() {
@@ -112,17 +140,17 @@ class _MyHomePageState extends State<signUp> {
                               });
                             }),
                         const SizedBox(
-                          height: 50,
+                          height: 30,
                         ),
                         SizedBox(
-                          width: 200,
-                          height: 50,
+                          width: 330,
+                          height: 60,
                           child: ElevatedButton(
                             onPressed: () async {
                               if (formkey.currentState?.validate() ?? false) {
                                 try {
                                   await Auth().signUp(
-                                    isAdmin: isAdmin,
+                                      isAdmin: isAdmin,
                                       email: _emailController.text,
                                       password: _passwordController.text);
                                   ScaffoldMessenger.of(context).showSnackBar(
@@ -150,9 +178,9 @@ class _MyHomePageState extends State<signUp> {
                                 shape: WidgetStatePropertyAll(
                                     RoundedRectangleBorder(
                                         borderRadius:
-                                            BorderRadius.circular(20))),
-                                backgroundColor:
-                                    const WidgetStatePropertyAll(Colors.black)),
+                                            BorderRadius.circular(5))),
+                                backgroundColor: WidgetStatePropertyAll(
+                                    AppColors.primaryColor)),
                             child: const Text(
                               "Sign Up",
                               style:
@@ -168,7 +196,13 @@ class _MyHomePageState extends State<signUp> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text("already have an account?"),
+                    Text(
+                      "already have an account?",
+                      style: TextStyle(
+                        color: AppColors.disabledCategoryColor,
+                        fontFamily: "poppinslight",
+                      ),
+                    ),
                     TextButton(
                         onPressed: () {
                           Navigator.pushReplacement(
@@ -176,10 +210,12 @@ class _MyHomePageState extends State<signUp> {
                               MaterialPageRoute(
                                   builder: (context) => signIn()));
                         },
-                        child: const Text(
+                        child: Text(
                           "Sign in",
                           style: TextStyle(
-                              color: Colors.black, fontWeight: FontWeight.w800),
+                              fontFamily: "poppinslight",
+                              color: AppColors.primaryColor,
+                              fontWeight: FontWeight.w600),
                         ))
                   ],
                 ),
