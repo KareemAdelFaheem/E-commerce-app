@@ -468,34 +468,12 @@ class _ProductDetailsState extends State<ProductDetails> {
                   ),
                   Row(
                     children: [
-                      Container(
-                        height: 74,
-                        width: 70,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15)),
-                        child: ElevatedButton(
-                            style: ButtonStyle(
-                                padding: const WidgetStatePropertyAll(
-                                    EdgeInsets.zero),
-                                backgroundColor: WidgetStatePropertyAll(
-                                    AppColors.primaryColor),
-                                shape: WidgetStatePropertyAll(
-                                    RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(15)))),
-                            onPressed: () {},
-                            child: const Icon(
-                              Icons.add_shopping_cart,
-                              size: 30,
-                              color: Colors.white,
-                            )),
-                      ),
                       const SizedBox(
                         width: 10,
                       ),
                       Container(
                         height: 74,
-                        width: 170,
+                        width: 220,
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(15)),
                         child: ElevatedButton(
@@ -506,9 +484,17 @@ class _ProductDetailsState extends State<ProductDetails> {
                                     RoundedRectangleBorder(
                                         borderRadius:
                                             BorderRadius.circular(15)))),
-                            onPressed: () {},
+                            onPressed: () {
+                              Auth().addToCart(
+                                  context,
+                                  FirebaseAuth.instance.currentUser!,
+                                  widget.category,
+                                  widget.name,
+                                  widget.price,
+                                  1);
+                            },
                             child: const Text(
-                              "Buy Now",
+                              "Add to Cart",
                               style: TextStyle(
                                   fontSize: 20,
                                   fontFamily: "poppins",
