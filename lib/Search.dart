@@ -1,5 +1,6 @@
 import 'package:ecommerce/Pages/ProductDetails.dart';
 import 'package:ecommerce/Widgets/VoiceToText.dart';
+import 'package:ecommerce/Widgets/barcode.dart';
 import 'package:flutter/material.dart';
 import 'package:ecommerce/Model/Products_model.dart';
 
@@ -67,6 +68,12 @@ class ProductSearchDelegate extends SearchDelegate<Product> {
           query = newQuery;
         },
       ),
+      IconButton(
+          onPressed: () async {
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => BarcodeScannerScreen()));
+          },
+          icon: const Icon(Icons.qr_code_scanner)),
     ];
   }
 
@@ -75,7 +82,8 @@ class ProductSearchDelegate extends SearchDelegate<Product> {
     final results = products
         .where((product) =>
             product.title.toLowerCase().contains(query.toLowerCase()) ||
-            product.category.toLowerCase().contains(query.toLowerCase()))
+            product.category.toLowerCase().contains(query.toLowerCase()) ||
+            product.barcode.toLowerCase().contains(query.toLowerCase()))
         .toList();
 
     return Scaffold(
@@ -91,7 +99,7 @@ class ProductSearchDelegate extends SearchDelegate<Product> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => ProductDetails(
-                          category: product.category,
+                              category: product.category,
                               name: product.title,
                               stock: product.stock,
                               price: product.price,
@@ -111,7 +119,8 @@ class ProductSearchDelegate extends SearchDelegate<Product> {
     final suggestions = products
         .where((product) =>
             product.title.toLowerCase().contains(query.toLowerCase()) ||
-            product.category.toLowerCase().contains(query.toLowerCase()))
+            product.category.toLowerCase().contains(query.toLowerCase()) ||
+            product.barcode.toLowerCase().contains(query.toLowerCase()))
         .toList();
 
     return Scaffold(
@@ -133,7 +142,7 @@ class ProductSearchDelegate extends SearchDelegate<Product> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => ProductDetails(
-                          category: product.category,
+                              category: product.category,
                               name: product.title,
                               stock: product.stock,
                               price: product.price,

@@ -18,8 +18,8 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
 
   final List<Widget> _screen = [
     const HomePage(),
-    const Cart(),
     const Favorites(),
+    const Cart(),
   ];
   void _onTapped(int index) {
     setState(() {
