@@ -16,46 +16,46 @@ class WidgetTree extends StatefulWidget {
   State<WidgetTree> createState() => _WidgetTreeState();
 }
 
-class _WidgetTreeState extends State<WidgetTree>  {
+class _WidgetTreeState extends State<WidgetTree> {
+  var fireStoreDoc;
   @override
   Widget build(BuildContext context) {
+    // Auth().signOut();
     return StreamBuilder(
       stream: Auth().authStateChanges,
       builder: (context, snapshot) {
-        // If the user is logged in
         if (snapshot.hasData) {
-          User? user = snapshot.data as User?; // Get the logged-in user
-
-          // Fetch user role from Firestore
+          User? user = snapshot.data;
           return FutureBuilder<DocumentSnapshot>(
             future: FirebaseFirestore.instance
                 .collection('users')
                 .doc(user?.uid)
-                .get(), // Get the user data
-            builder: (context, roleSnapshot) {
-              if (roleSnapshot.connectionState == ConnectionState.waiting) {
-                // Show loading indicator while fetching user role
-                return Center(child: CircularProgressIndicator());
+                .get(),
+            builder: (context, docSnapshot) {
+              if (docSnapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
               }
 
-              if (roleSnapshot.hasData) {
-                var userRole = roleSnapshot.data?.get('role'); // Get the role from Firestore
+              if (docSnapshot.hasData) {
+                var userRole = docSnapshot.data?.get('role');
+                var userRemember = docSnapshot.data?.get('remember');
 
-                // Check the user role and return the appropriate homepage
+                if (userRemember==false) {
+                  return signIn();
+                }
+
                 if (userRole == 'admin') {
-                  return Adminhomepage(); // Navigate to Admin homepage
+                  return const Adminhomepage();
                 } else {
-                  return MyBottomNavigationBar(); // Navigate to User homepage
+                  return const MyBottomNavigationBar();
                 }
               } else {
-                // If no role is found, return the user homepage by default
-                return MyBottomNavigationBar();
+                return const MyBottomNavigationBar();
               }
             },
           );
         }
 
-        // If not logged in, return sign-in page
         return signIn();
       },
     );
