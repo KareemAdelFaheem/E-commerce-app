@@ -6,6 +6,7 @@ import 'package:ecommerce/Pages/signIn.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class signUp extends StatefulWidget {
   const signUp({super.key});
@@ -21,6 +22,48 @@ class _MyHomePageState extends State<signUp> {
   final TextEditingController _confirmpasswordController =
       TextEditingController();
   bool isAdmin = false;
+
+  DateTime? _selectedDate;
+  String _ageText = "";
+
+  void _calculateAge() {
+    if (_selectedDate == null) {
+      return;
+    }
+    DateTime now = DateTime.now();
+    int years = now.year - _selectedDate!.year;
+    int months = now.month - _selectedDate!.month;
+    int days = now.day - _selectedDate!.day;
+
+    if (months < 0) {
+      years--;
+      months += 12;
+    }
+    if (days < 0) {
+      months--;
+      days += DateTime(now.year, now.month, 0).day;
+    }
+
+    setState(() {
+      final DateFormat dateFormat = DateFormat("yyyy-MM-dd");
+      _ageText = dateFormat.format(_selectedDate!);
+    });
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null && picked != _selectedDate) {
+      setState(() {
+        _selectedDate = picked;
+      });
+      _calculateAge();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -139,38 +182,77 @@ class _MyHomePageState extends State<signUp> {
                                 isAdmin = value!;
                               });
                             }),
-                        const SizedBox(
-                          height: 30,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(left: 30.0),
+                              child: Text(
+                                _ageText == "" ? "BirthDate" : _ageText,
+                                style: TextStyle(
+                                    color: AppColors.disabledCategoryColor),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(right: 30.0),
+                              child: InkWell(
+                                onTap: () {
+                                  _selectDate(context);
+                                  print(_ageText);
+                                },
+                                child: SizedBox(
+                                  height: 50,
+                                  // width: 20,
+                                  child: Icon(
+                                    Icons.date_range,
+                                    color: AppColors.primaryColor,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
+                        // const SizedBox(
+                        //   height: 30,
+                        // ),
                         SizedBox(
                           width: 330,
                           height: 60,
                           child: ElevatedButton(
                             onPressed: () async {
                               if (formkey.currentState?.validate() ?? false) {
-                                try {
-                                  await Auth().signUp(
-                                      isAdmin: isAdmin,
-                                      email: _emailController.text,
-                                      password: _passwordController.text);
+                                if (_selectedDate != null) {
+                                  try {
+                                    await Auth().signUp(
+                                        isAdmin: isAdmin,
+                                        email: _emailController.text,
+                                        password: _passwordController.text,
+                                        birthdate: _ageText
+                                        );
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                            content: Text(
+                                                "Account created successfully")));
+                                    Navigator.pushAndRemoveUntil(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => signIn(
+                                                  useremail:
+                                                      _emailController.text,
+                                                  userpassword:
+                                                      _passwordController.text,
+                                                )),
+                                        (Route<dynamic> route) => false);
+                                    Auth().signOut();
+                                  } on FirebaseAuthException catch (e) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                            content: Text("${e.message}")));
+                                  }
+                                } else {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
-                                          content: Text(
-                                              "Account created successfully")));
-                                  Navigator.pushAndRemoveUntil(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => signIn(
-                                                useremail:
-                                                    _emailController.text,
-                                                userpassword:
-                                                    _passwordController.text,
-                                              )),
-                                      (Route<dynamic> route) => false);
-                                  Auth().signOut();
-                                } on FirebaseAuthException catch (e) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text("${e.message}")));
+                                          content: Text("select BirthDate")));
                                 }
                               }
                             },
@@ -190,9 +272,9 @@ class _MyHomePageState extends State<signUp> {
                         ),
                       ],
                     )),
-                const SizedBox(
-                  height: 10,
-                ),
+                // const SizedBox(
+                //   height: 10,
+                // ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
