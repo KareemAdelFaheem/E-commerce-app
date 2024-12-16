@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ecommerce/Auth.dart';
 import 'package:ecommerce/Pages/BottomNavigationBar.dart';
 import 'package:ecommerce/Widgets/inputs/Colors.dart';
@@ -14,10 +15,14 @@ class Cart extends StatefulWidget {
 class _CartState extends State<Cart> {
   List<Map<String, dynamic>> cartItem = List.empty();
   bool isLoading = true;
+  double totalPrice = 0;
+  String stringtotalPrice = "";
+  double deliveryFee = 2.30;
 
   @override
   void initState() {
     getCartItems();
+
     super.initState();
   }
 
@@ -43,10 +48,18 @@ class _CartState extends State<Cart> {
 
   @override
   Widget build(BuildContext context) {
+    totalPrice = 0;
+    for (var element in cartItem) {
+      setState(() {
+        totalPrice += double.parse(element['price']) * element['quantity'];
+        stringtotalPrice = totalPrice.toStringAsPrecision(4);
+      });
+    }
     return Scaffold(
       backgroundColor: Colors.black,
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 100),
+        // padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 100),
+        padding: const EdgeInsets.only(right: 10, left: 10, top: 100),
         child: SizedBox(
           width: MediaQuery.sizeOf(context).width,
           height: MediaQuery.sizeOf(context).height,
@@ -198,7 +211,83 @@ class _CartState extends State<Cart> {
                                                               .spaceAround,
                                                       children: [
                                                         IconButton(
-                                                            onPressed: () {},
+                                                            onPressed:
+                                                                () async {
+                                                              try {
+                                                                final userDocRef = FirebaseFirestore
+                                                                    .instance
+                                                                    .collection(
+                                                                        'users')
+                                                                    .doc(FirebaseAuth
+                                                                        .instance
+                                                                        .currentUser!
+                                                                        .uid);
+
+                                                                final docSnapshot =
+                                                                    await userDocRef
+                                                                        .get();
+                                                                if (!docSnapshot
+                                                                    .exists) {
+                                                                  print(
+                                                                      "User document does not exist.");
+                                                                  return;
+                                                                }
+
+                                                                final userData =
+                                                                    docSnapshot
+                                                                        .data()!;
+                                                                final List<
+                                                                        dynamic>
+                                                                    cart =
+                                                                    userData[
+                                                                            'cart'] ??
+                                                                        [];
+
+                                                                if (index >=
+                                                                    cart.length) {
+                                                                  print(
+                                                                      "Invalid index: $index, cart length: ${cart.length}");
+                                                                  return;
+                                                                }
+
+                                                                // cart[index][
+                                                                //     'quantity']--;
+                                                                if (cart[index][
+                                                                        'quantity'] >
+                                                                    1) {
+                                                                  cart[index][
+                                                                      'quantity']--;
+                                                                } else {
+                                                                  cart.removeAt(
+                                                                      index);
+                                                                }
+
+                                                                await userDocRef
+                                                                    .update({
+                                                                  'cart': cart
+                                                                });
+
+                                                                setState(() {
+                                                                  if (cartItem[
+                                                                              index]
+                                                                          [
+                                                                          'quantity'] >
+                                                                      1) {
+                                                                    cartItem[
+                                                                            index]
+                                                                        [
+                                                                        'quantity']--;
+                                                                  } else {
+                                                                    cartItem
+                                                                        .removeAt(
+                                                                            index);
+                                                                  }
+                                                                });
+                                                              } catch (e) {
+                                                                print(
+                                                                    "Failed to decrease quantity: $e");
+                                                              }
+                                                            },
                                                             icon: Container(
                                                               decoration: BoxDecoration(
                                                                   color: AppColors
@@ -212,17 +301,84 @@ class _CartState extends State<Cart> {
                                                                       .white,
                                                                   Icons.remove),
                                                             )),
-                                                        const Text(
-                                                          "1",
-                                                          style: TextStyle(
-                                                              fontSize: 20,
-                                                              fontFamily:
-                                                                  "poppins",
-                                                              color:
-                                                                  Colors.white),
+                                                        Text(
+                                                          "${cartItem[index]['quantity']}",
+                                                          style:
+                                                              const TextStyle(
+                                                                  fontSize: 20,
+                                                                  fontFamily:
+                                                                      "poppins",
+                                                                  color: Colors
+                                                                      .white),
                                                         ),
                                                         IconButton(
-                                                            onPressed: () {},
+                                                            onPressed:
+                                                                () async {
+                                                              if (cartItem[
+                                                                          index]
+                                                                      [
+                                                                      'quantity'] >=
+                                                                  1) {
+                                                                try {
+                                                                  final userDocRef = FirebaseFirestore
+                                                                      .instance
+                                                                      .collection(
+                                                                          'users')
+                                                                      .doc(FirebaseAuth
+                                                                          .instance
+                                                                          .currentUser!
+                                                                          .uid);
+
+                                                                  final docSnapshot =
+                                                                      await userDocRef
+                                                                          .get();
+                                                                  if (!docSnapshot
+                                                                      .exists) {
+                                                                    print(
+                                                                        "User document does not exist.");
+                                                                    return;
+                                                                  }
+
+                                                                  final userData =
+                                                                      docSnapshot
+                                                                          .data()!;
+                                                                  final List<
+                                                                          dynamic>
+                                                                      cart =
+                                                                      userData[
+                                                                              'cart'] ??
+                                                                          [];
+
+                                                                  if (index >=
+                                                                      cart.length) {
+                                                                    print(
+                                                                        "Invalid index: $index, cart length: ${cart.length}");
+                                                                    return;
+                                                                  }
+
+                                                                  cart[index][
+                                                                      'quantity']++;
+
+                                                                  await userDocRef
+                                                                      .update({
+                                                                    'cart': cart
+                                                                  });
+
+                                                                  setState(() {
+                                                                    cartItem[
+                                                                            index]
+                                                                        [
+                                                                        'quantity']++;
+                                                                  });
+                                                                } catch (e) {
+                                                                  print(
+                                                                      "Failed to decrease quantity: $e");
+                                                                }
+                                                              } else {
+                                                                print(
+                                                                    "Quantity cannot be less than 1");
+                                                              }
+                                                            },
                                                             icon: Container(
                                                               decoration: BoxDecoration(
                                                                   color: AppColors
@@ -246,25 +402,12 @@ class _CartState extends State<Cart> {
                                               ),
                                             ),
                                             Expanded(
-                                              child: Row(
-                                                children: [
-                                                  Text(
-                                                    "\$",
-                                                    style: TextStyle(
-                                                        fontFamily: "poppins",
-                                                        fontSize: 20,
-                                                        color: AppColors
-                                                            .primaryColor),
-                                                  ),
-                                                  Text(
-                                                    cartItem[index]['price'],
-                                                    style: const TextStyle(
-                                                        fontSize: 20,
-                                                        fontFamily:
-                                                            "poppinslight",
-                                                        color: Colors.white),
-                                                  ),
-                                                ],
+                                              child: Text(
+                                                "\$${double.parse(cartItem[index]['price']) * cartItem[index]['quantity']}",
+                                                style: const TextStyle(
+                                                    fontSize: 20,
+                                                    fontFamily: "poppinslight",
+                                                    color: Colors.white),
                                               ),
                                             )
                                           ],
@@ -279,6 +422,118 @@ class _CartState extends State<Cart> {
                                 //       "${cartItem[index]['category']} ${cartItem[index]['name']}"),
                                 // );
                               }),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          height: 120,
+                          width: 325,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16),
+                              border:
+                                  Border.all(color: AppColors.primaryColor)),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "Payment Summary",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontFamily: "inter",
+                                        fontSize: 16),
+                                  )
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "Total items (${cartItem.length})",
+                                    style: TextStyle(
+                                        color: Colors.white.withOpacity(0.34),
+                                        fontFamily: "inter",
+                                        fontSize: 16),
+                                  ),
+                                  Text(
+                                    "\$$stringtotalPrice",
+                                    style: const TextStyle(
+                                        color: Colors.white,
+                                        fontFamily: "inter",
+                                        fontSize: 16),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "Delivery Fee",
+                                    style: TextStyle(
+                                        color: Colors.white.withOpacity(0.34),
+                                        fontFamily: "inter",
+                                        fontSize: 16),
+                                  ),
+                                  Text(
+                                    "\$$deliveryFee",
+                                    style: const TextStyle(
+                                        color: Colors.white,
+                                        fontFamily: "inter",
+                                        fontSize: 16),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "Total",
+                                    style: TextStyle(
+                                        color: AppColors.primaryColor,
+                                        fontFamily: "inter",
+                                        fontSize: 16),
+                                  ),
+                                  Text(
+                                    "\$${deliveryFee + double.parse(stringtotalPrice)}",
+                                    style: const TextStyle(
+                                        color: Colors.white,
+                                        fontFamily: "inter",
+                                        fontSize: 16),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        SizedBox(
+                          width: 327,
+                          height: 52,
+                          child: ElevatedButton(
+                            onPressed: () {},
+                            style: ButtonStyle(
+                                shape: WidgetStatePropertyAll(
+                                    RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(50))),
+                                backgroundColor: WidgetStatePropertyAll(
+                                    AppColors.primaryColor)),
+                            child: const Text(
+                              "Order Now",
+                              style:
+                                  TextStyle(fontSize: 20, color: Colors.white),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 10,
                         ),
                       ],
                     ),
