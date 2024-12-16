@@ -1,6 +1,8 @@
 import 'dart:ffi';
 
+import 'package:ecommerce/Auth.dart';
 import 'package:ecommerce/Widgets/inputs/Colors.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ProductDetails extends StatefulWidget {
@@ -210,6 +212,44 @@ class _ProductDetailsState extends State<ProductDetails> {
                     ],
                   ),
                 ),
+                Container(
+                  padding: const EdgeInsets.only(right: 20, top: 40),
+                  decoration: const BoxDecoration(color: Colors.transparent),
+                  width: double.infinity,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Container(
+                          height: 40,
+                          width: 42,
+                          decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [
+                                    Color.fromRGBO(56, 56, 56, 1),
+                                    Color.fromRGBO(50, 50, 57, 1),
+                                    Color.fromRGBO(45, 45, 52, 1),
+                                    Color.fromRGBO(0, 0, 0, 1),
+                                  ]),
+                              borderRadius: BorderRadius.circular(8)),
+                          child: IconButton(
+                            onPressed: () {
+                              Auth().addToFavorites(
+                                  context,
+                                  FirebaseAuth.instance.currentUser!,
+                                  widget.category,
+                                  widget.name,
+                                  widget.price);
+                            },
+                            icon: const Icon(
+                              Icons.favorite,
+                              color: Color.fromRGBO(255, 255, 225, 0.6),
+                            ),
+                          )),
+                    ],
+                  ),
+                )
               ],
             ),
             const SizedBox(
@@ -426,26 +466,56 @@ class _ProductDetailsState extends State<ProductDetails> {
                       ],
                     ),
                   ),
-                  Container(
-                    height: 74,
-                    width: 262,
-                    decoration:
-                        BoxDecoration(borderRadius: BorderRadius.circular(15)),
-                    child: ElevatedButton(
-                        style: ButtonStyle(
-                            backgroundColor:
-                                WidgetStatePropertyAll(AppColors.primaryColor),
-                            shape: WidgetStatePropertyAll(
-                                RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(15)))),
-                        onPressed: () {},
-                        child: const Text(
-                          "Buy Now",
-                          style: TextStyle(
-                              fontSize: 20,
-                              fontFamily: "poppins",
-                              color: Colors.white),
-                        )),
+                  Row(
+                    children: [
+                      Container(
+                        height: 74,
+                        width: 70,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15)),
+                        child: ElevatedButton(
+                            style: ButtonStyle(
+                                padding: const WidgetStatePropertyAll(
+                                    EdgeInsets.zero),
+                                backgroundColor: WidgetStatePropertyAll(
+                                    AppColors.primaryColor),
+                                shape: WidgetStatePropertyAll(
+                                    RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(15)))),
+                            onPressed: () {},
+                            child: const Icon(
+                              Icons.add_shopping_cart,
+                              size: 30,
+                              color: Colors.white,
+                            )),
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      Container(
+                        height: 74,
+                        width: 170,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15)),
+                        child: ElevatedButton(
+                            style: ButtonStyle(
+                                backgroundColor: WidgetStatePropertyAll(
+                                    AppColors.primaryColor),
+                                shape: WidgetStatePropertyAll(
+                                    RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(15)))),
+                            onPressed: () {},
+                            child: const Text(
+                              "Buy Now",
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  fontFamily: "poppins",
+                                  color: Colors.white),
+                            )),
+                      ),
+                    ],
                   )
                 ],
               ),
