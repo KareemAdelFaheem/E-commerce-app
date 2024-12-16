@@ -46,6 +46,7 @@ dependencies:
   permission_handler: ^11.1.0
   speech_to_text: ^7.0.0
   mobile_scanner: ^6.0.2
+  intl: ^0.20.1
   
 
 dev_dependencies:

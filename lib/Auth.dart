@@ -14,6 +14,23 @@ class Auth {
 
   Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
 
+  Future<void> updateCartItemQuantity(
+      BuildContext context, User user, String itemId, int newQuantity) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .collection('cart')
+          .doc(itemId)
+          .update({'quantity': newQuantity});
+    } catch (e) {
+      print("Error updating quantity: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to update quantity: $e")),
+      );
+    }
+  }
+
   Future<void> removeFromFavorites(BuildContext context, String category,
       String name, String price, User currentUser) async {
     try {
@@ -91,7 +108,7 @@ class Auth {
     return items;
   }
 
-  Future<void> addToCart(context, User user, String categoryName,
+  Future<void> addToCart(BuildContext context, User user, String categoryName,
       String productName, String price, int quantity) async {
     try {
       Map<String, dynamic> item = {
@@ -104,16 +121,70 @@ class Auth {
       DocumentReference userDoc =
           FirebaseFirestore.instance.collection('users').doc(user.uid);
 
-      await userDoc.update({
-        'cart': FieldValue.arrayUnion([item])
-      });
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Item added to cart!')));
+      final docSnapshot = await userDoc.get();
+      if (!docSnapshot.exists) {
+        print("User document does not exist.");
+        return;
+      }
+
+      final userData = docSnapshot.data() as Map<String, dynamic>;
+
+      final List<dynamic> cart = userData['cart'] ?? [];
+
+      final existingItem = cart.firstWhere(
+        (element) => element['name'] == productName,
+        orElse: () => null,
+      );
+
+      if (existingItem != null) {
+        existingItem['quantity'] += quantity;
+
+        await userDoc.update({
+          'cart': cart,
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text(
+                  'This items already exists,we increased the Quantity in cart!')),
+        );
+      } else {
+        await userDoc.update({
+          'cart': FieldValue.arrayUnion([item]),
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Item added to cart!')),
+        );
+      }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error Adding item to cart: $e')));
+        SnackBar(content: Text('Error Adding item to cart: $e')),
+      );
     }
   }
+
+  // Future<void> addToCart(context, User user, String categoryName,
+  //     String productName, String price, int quantity) async {
+  //   try {
+  //     Map<String, dynamic> item = {
+  //       'category': categoryName,
+  //       'name': productName,
+  //       'price': price,
+  //       'quantity': quantity
+  //     };
+
+  //     DocumentReference userDoc =
+  //         FirebaseFirestore.instance.collection('users').doc(user.uid);
+
+  //     await userDoc.update({
+  //       'cart': FieldValue.arrayUnion([item])
+  //     });
+  //     ScaffoldMessenger.of(context)
+  //         .showSnackBar(const SnackBar(content: Text('Item added to cart!')));
+  //   } catch (e) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(content: Text('Error Adding item to cart: $e')));
+  //   }
+  // }
 
   Future<void> addToFavorites(context, User user, String categoryName,
       String productName, String price) async {
@@ -212,7 +283,8 @@ class Auth {
   Future<UserCredential> signUp(
       {required bool isAdmin,
       required String email,
-      required String password}) async {
+      required String password,
+      required String birthdate}) async {
     UserCredential userCredential = await _firebaseAuth
         .createUserWithEmailAndPassword(email: email, password: password);
 
@@ -223,6 +295,7 @@ class Auth {
           .set({
         'email': email,
         'role': isAdmin ? 'admin' : 'user',
+        'birthdate': birthdate,
       });
     } catch (e) {
       print("$e");
