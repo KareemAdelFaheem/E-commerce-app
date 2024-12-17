@@ -8,6 +8,8 @@ import 'package:ecommerce/Model/Products_model.dart';
 // import 'package:mobile_project/widget/VoiceToText.dart';
 class ProductSearchDelegate extends SearchDelegate<Product> {
   final List<Product> products;
+  final String selectedCategoryKey;
+  final String selectedProductKey;
   // final Function(Product) onProductSelected;
   // final Function(Product) onAddToCart;
   // final Function(Product) onAddToFavorites;
@@ -15,6 +17,7 @@ class ProductSearchDelegate extends SearchDelegate<Product> {
 
   ProductSearchDelegate({
     required this.products,
+    required this.selectedCategoryKey,required this.selectedProductKey, 
     // required this.onProductSelected,
     // required this.onAddToCart,
     // required this.onAddToFavorites,
@@ -99,6 +102,8 @@ class ProductSearchDelegate extends SearchDelegate<Product> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => ProductDetails(
+                          selectedCategoryKey: selectedCategoryKey,
+                          selectedProductKey: selectedProductKey,
                               category: product.category,
                               name: product.title,
                               stock: product.stock,
@@ -142,6 +147,8 @@ class ProductSearchDelegate extends SearchDelegate<Product> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => ProductDetails(
+                              selectedCategoryKey: selectedCategoryKey,
+                              selectedProductKey: selectedProductKey,
                               category: product.category,
                               name: product.title,
                               stock: product.stock,

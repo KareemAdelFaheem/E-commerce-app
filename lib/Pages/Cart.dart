@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ecommerce/Auth.dart';
+import 'package:ecommerce/DataBaseService.dart';
 import 'package:ecommerce/Pages/BottomNavigationBar.dart';
 import 'package:ecommerce/Widgets/inputs/Colors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -172,7 +173,7 @@ class _CartState extends State<Cart> {
                                               // color: Colors.red,
                                               width: MediaQuery.sizeOf(context)
                                                       .width *
-                                                  0.6,
+                                                  0.55,
                                               child: Column(
                                                 mainAxisAlignment:
                                                     MainAxisAlignment
@@ -517,7 +518,16 @@ class _CartState extends State<Cart> {
                           width: 327,
                           height: 52,
                           child: ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              for (var item in cartItem) {
+                                Databaseservice().placeOrder(
+                                    item['category'],
+                                    item['name'],
+                                    item['price'],
+                                    item['quantity'],
+                                    stringtotalPrice);
+                              }
+                            },
                             style: ButtonStyle(
                                 shape: WidgetStatePropertyAll(
                                     RoundedRectangleBorder(
