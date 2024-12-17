@@ -14,6 +14,32 @@ class Auth {
 
   Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
 
+  // Future<void> placeOrders(context, User user, String categoryName,
+  //     String productName, String price,int quantity,String  totalPrice) async {
+  //   try {
+  //     Map<String, dynamic> item = {
+  //       'category': categoryName,
+  //       'name': productName,
+  //       'price': price,
+  //       'quantity':quantity,
+  //       'total':totalPrice,
+  //     };
+
+  //     DocumentReference userDoc =
+  //         FirebaseFirestore.instance.collection('users').doc(user.uid);
+
+  //     await userDoc.update({
+  //       'orders': FieldValue.arrayUnion([item]),
+        
+  //     });
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //         const SnackBar(content: Text('Item added to Orders!')));
+  //   } catch (e) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(content: Text('Error Adding item to Orders: $e')));
+  //   }
+  // }
+
   Future<void> updateCartItemQuantity(
       BuildContext context, User user, String itemId, int newQuantity) async {
     try {
@@ -109,9 +135,11 @@ class Auth {
   }
 
   Future<void> addToCart(BuildContext context, User user, String categoryName,
-      String productName, String price, int quantity) async {
+      String productName, String price, int quantity,String selectedCategoryKey,String selectedProductKey) async {
     try {
       Map<String, dynamic> item = {
+        'categoryKey':selectedCategoryKey,
+        'productKey':selectedProductKey,
         'category': categoryName,
         'name': productName,
         'price': price,

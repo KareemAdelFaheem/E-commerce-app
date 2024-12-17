@@ -11,7 +11,6 @@ class Databaseservice {
   final _real = FirebaseDatabase.instance;
   final DatabaseReference _dbref = FirebaseDatabase.instance.ref();
 
- 
   Future<List<Product>> getAllProducts() async {
     try {
       final DatabaseReference databaseRef =
@@ -133,6 +132,110 @@ class Databaseservice {
       print("Product updated successfully!");
     } catch (e) {
       print("Error updating product: ${e.toString()}");
+    }
+  }
+  void placeOrder(String categoryName, String productName, String price, int quantity, String totalPrice) async {
+  try {
+    // Reference to the 'Categories' node
+    final DatabaseReference categoryRef = FirebaseDatabase.instance
+        .ref('Orders'); // Specific category node
+
+    // Prepare the order data
+    Map<String, dynamic> orderItem = {
+      'name': productName,
+      'price': price,
+      'quantity': quantity,
+      'total': totalPrice,
+    };
+
+    // Push the new order to the orders list of the category
+    await categoryRef.push().set(orderItem);
+
+    print("Order added to orders list!");
+  } catch (e) {
+    print("Error adding order to orders list: $e");
+  }
+}
+
+
+  // void updateStock(String categoryKey, String productKey, int stock) async {
+  //   try {
+  //     // Reference to the specific product using categoryKey and productKey
+  //     final DatabaseReference productRef = _real
+  //         .ref()
+  //         .child(AppStrings.chilCategory) // Root categories node
+  //         .child(categoryKey) // Specific category node
+  //         .child("products") // Products node
+  //         .child(productKey); // Unique product node
+
+  //     // Fetch the current product details before updating
+  //     final snapshot = await productRef.get() as Map<String, dynamic>;
+
+  //     if (snapshot != {}) {
+  //       // Store the old stock value in a variable before updating
+  //       int oldStock = snapshot['stock'];
+  //       print("Old stock: $oldStock");
+
+  //       // Now, update the stock
+  //       await productRef.update({
+  //         "stock": oldStock-stock,
+  //       });
+
+  //       print("Stock updated successfully!");
+  //       // You can now use the oldStock variable for any other purposes
+  //       print("Updated stock from $oldStock to $stock");
+  //     } else {
+  //       print("Product not found!");
+  //     }
+  //   } catch (e) {
+  //     print("Error updating stock: ${e.toString()}");
+  //   }
+  // }
+
+  void updateStock(String categoryKey, String productKey, int stock,
+     ) async {
+    try {
+      // Reference to the specific product using categoryKey and productKey
+      final DatabaseReference productRef = _real
+          .ref()
+          .child(AppStrings.chilCategory) // Root categories node
+          .child(categoryKey) // Specific category node
+          .child("products") // Products node
+          .child(productKey); // Unique product node
+
+      // Update the product details
+      await productRef.update({
+        "stock": stock,
+
+      });
+
+      print("rate added successfully!");
+    } catch (e) {
+      print("Error adding rate: ${e.toString()}");
+    }
+  }
+  void updateRate(
+    String categoryKey,
+    String productKey,
+    double rate,
+  ) async {
+    try {
+      // Reference to the specific product using categoryKey and productKey
+      final DatabaseReference productRef = _real
+          .ref()
+          .child(AppStrings.chilCategory) // Root categories node
+          .child(categoryKey) // Specific category node
+          .child("products") // Products node
+          .child(productKey); // Unique product node
+
+      // Update the product details
+      await productRef.update({
+        "rate": rate,
+      });
+
+      print("rate added successfully!");
+    } catch (e) {
+      print("Error adding rate: ${e.toString()}");
     }
   }
 
