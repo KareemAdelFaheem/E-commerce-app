@@ -151,8 +151,10 @@ class _MyHomePageState extends State<HomePage> {
                     onTap: () {
                       showSearch(
                           context: context,
-                          delegate:
-                              ProductSearchDelegate(products: allProducts));
+                          delegate: ProductSearchDelegate(
+                              products: allProducts,
+                              selectedCategoryKey: selectedCategoryKey!,
+                              selectedProductKey: products[0]['key']));
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -243,6 +245,10 @@ class _MyHomePageState extends State<HomePage> {
                                           MaterialPageRoute(
                                               builder: (context) =>
                                                   ProductDetails(
+                                                    selectedProductKey:
+                                                        product['key'],
+                                                    selectedCategoryKey:
+                                                        selectedCategoryKey!,
                                                     category:
                                                         selectedCategoryName!,
                                                     name: product['name'],
@@ -360,7 +366,7 @@ class _MyHomePageState extends State<HomePage> {
                                                             width: 5,
                                                           ),
                                                           Text(
-                                                            product['rate'],
+                                                            "${product['rate']}",
                                                             style:
                                                                 const TextStyle(
                                                                     color: Colors
@@ -377,13 +383,31 @@ class _MyHomePageState extends State<HomePage> {
                                                 Expanded(
                                                   child: IconButton(
                                                     onPressed: () {
-                                                      Auth().addToCart(
-                                                          context,
-                                                          FirebaseAuth.instance
-                                                              .currentUser!,
-                                                          selectedCategoryName!,
-                                                          product['name'],
-                                                          product['price'],1);
+                                                      if (product['stock'] >
+                                                          0) {
+                                                        Auth().addToCart(
+                                                            context,
+                                                            FirebaseAuth
+                                                                .instance
+                                                                .currentUser!,
+                                                            selectedCategoryName!,
+                                                            product['name'],
+                                                            product['price'],
+                                                            1,selectedCategoryKey!, product['key'],);
+
+                                                        Databaseservice().updateStock(
+                                                            selectedCategoryKey!,
+                                                            product['key'],
+                                                            product['stock'] -
+                                                                1);
+                                                      } else {
+                                                        ScaffoldMessenger.of(
+                                                                context)
+                                                            .showSnackBar(
+                                                                const SnackBar(
+                                                                    content: Text(
+                                                                        "This item is out of stock")));
+                                                      }
                                                     },
                                                     icon: const Icon(
                                                         size: 30,

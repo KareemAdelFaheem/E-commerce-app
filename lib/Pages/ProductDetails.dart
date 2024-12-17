@@ -1,9 +1,12 @@
-import 'dart:ffi';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ecommerce/Auth.dart';
+import 'package:ecommerce/DataBaseService.dart';
+import 'package:ecommerce/Model/Products_model.dart';
 import 'package:ecommerce/Widgets/inputs/Colors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class ProductDetails extends StatefulWidget {
   final String category;
@@ -11,6 +14,8 @@ class ProductDetails extends StatefulWidget {
   final int stock;
   final String price;
   final String Description;
+  final String selectedCategoryKey;
+  final String selectedProductKey;
   // final String rates;
   const ProductDetails(
       {super.key,
@@ -18,28 +23,89 @@ class ProductDetails extends StatefulWidget {
       required this.stock,
       required this.price,
       required this.Description,
-      required this.category});
+      required this.category,
+      required this.selectedCategoryKey,
+      required this.selectedProductKey});
 
   @override
   State<ProductDetails> createState() => _ProductDetailsState();
 }
 
 class _ProductDetailsState extends State<ProductDetails> {
+  final Databaseservice _firebaseService = Databaseservice();
+  Map<String, dynamic> product = {};
   bool _isExpanded = false;
-  bool _isSSelected = false;
-  bool _isMSelected = false;
-  bool _isLSelected = false;
-  Color SFillColor = AppColors.defaultSizeButtonColor;
-  Color MFillColor = AppColors.defaultSizeButtonColor;
-  Color LFillColor = AppColors.defaultSizeButtonColor;
-  Color SborderColor = Colors.transparent;
-  Color MborderColor = Colors.transparent;
-  Color LborderColor = Colors.transparent;
-  Color SColor = Colors.white.withOpacity(0.52);
-  Color MColor = Colors.white.withOpacity(0.52);
-  Color LColor = Colors.white.withOpacity(0.52);
+  double rating = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchSpecificProduct(widget.selectedCategoryKey, widget.selectedProductKey);
+  }
+
+  Future<void> fetchSpecificProduct(
+      String categoryKey, String productKey) async {
+    try {
+      final DatabaseReference productRef = FirebaseDatabase.instance
+          .ref('Categories/$categoryKey/products/$productKey');
+
+      final DataSnapshot snapshot = await productRef.get();
+
+      if (snapshot.exists) {
+        setState(() {
+          product = Map<String, dynamic>.from(snapshot.value as Map);
+        });
+        setState(() {
+          rating = product['rate'] != null ? product['rate'].toDouble() : 0.0;
+        });
+
+        print("Rating is$rating");
+        print("Fetched Product: $product");
+      } else {
+        print("Product not found!");
+      }
+    } catch (e) {
+      print("Error fetching product: $e");
+    }
+  }
+
+  //   final Databaseservice _firebaseService = Databaseservice();
+  // String? selectedCategoryKey;
+
+  //   List<Map<String, dynamic>> categories = [];
+
+  // final bool _isSSelected = false;
+  // final bool _isMSelected = false;
+  // final bool _isLSelected = false;
+  // Color SFillColor = AppColors.defaultSizeButtonColor;
+  // Color MFillColor = AppColors.defaultSizeButtonColor;
+  // Color LFillColor = AppColors.defaultSizeButtonColor;
+  // Color SborderColor = Colors.transparent;
+  // Color MborderColor = Colors.transparent;
+  // Color LborderColor = Colors.transparent;
+  // Color SColor = Colors.white.withOpacity(0.52);
+  // Color MColor = Colors.white.withOpacity(0.52);
+  // Color LColor = Colors.white.withOpacity(0.52);
+  //  Future<void> fetchCategories() async {
+  //   try {
+  //     final data = await _firebaseService.getCategories();
+  //     setState(() {
+  //       categories = data;
+  //       if (categories.isNotEmpty) {
+  //         selectedCategoryKey = categories.first['key'];
+  //       }
+
+  //     });
+  //   } catch (e) {
+  //       print("error loading data from database: $e");
+
+  //   }
+  // }
+
   @override
   Widget build(BuildContext context) {
+    // print(widget.selectedCategoryKey);
+    // print( widget.selectedProductKey);
     return Scaffold(
       backgroundColor: Colors.black,
       body: Container(
@@ -258,7 +324,7 @@ class _ProductDetailsState extends State<ProductDetails> {
             Container(
               // color: Colors.green,
               padding: const EdgeInsets.only(right: 20),
-              height: 120,
+              height: 100,
               width: double.infinity,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -271,13 +337,13 @@ class _ProductDetailsState extends State<ProductDetails> {
                         fontFamily: "poppins"),
                   ),
                   const SizedBox(
-                    height: 15,
+                    height: 10,
                   ),
                   Row(
                     children: [
                       Expanded(
                         child: Text(widget.Description,
-                            maxLines: _isExpanded ? 5 : 2,
+                            maxLines: _isExpanded ? 3 : 2,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                                 color: Colors.white.withOpacity(0.83),
@@ -310,119 +376,151 @@ class _ProductDetailsState extends State<ProductDetails> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Size",
+                    "Rate",
                     style: TextStyle(
                         color: Colors.white.withOpacity(0.51),
                         fontSize: 13,
                         fontFamily: "poppinlight"),
                   ),
-                  const SizedBox(
-                    height: 15,
-                  ),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Container(
-                        width: 110,
-                        height: 37,
-                        decoration: BoxDecoration(
-                            color: SFillColor,
-                            border: Border.all(width: 1, color: SborderColor),
-                            borderRadius: BorderRadius.circular(8)),
-                        child: TextButton(
-                            onPressed: () {
-                              setState(() {
-                                _isSSelected = true;
-                                SFillColor = Colors.black;
-                                MFillColor = AppColors.defaultSizeButtonColor;
-                                LFillColor = AppColors.defaultSizeButtonColor;
-                                SborderColor = AppColors.primaryColor;
-                                MborderColor = Colors.transparent;
-                                LborderColor = Colors.transparent;
-                                SColor = AppColors.primaryColor;
-                                MColor = Colors.white.withOpacity(0.52);
-                                LColor = Colors.white.withOpacity(0.52);
-                              });
-                            },
-                            style: const ButtonStyle(
-                              padding: WidgetStatePropertyAll(EdgeInsets.zero),
-                            ),
-                            child: Text(
-                              "S",
-                              style: TextStyle(
-                                  fontSize: 20,
-                                  color: SColor,
-                                  fontFamily: "poppins"),
-                            )),
+                      Text(
+                        "$rating",
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontFamily: "poppinlight"),
                       ),
-                      Container(
-                        width: 110,
-                        height: 37,
-                        decoration: BoxDecoration(
-                            color: MFillColor,
-                            border: Border.all(width: 1, color: MborderColor),
-                            borderRadius: BorderRadius.circular(8)),
-                        child: TextButton(
-                            onPressed: () {
-                              setState(() {
-                                _isMSelected = true;
-                                MFillColor = Colors.black;
-                                SFillColor = AppColors.defaultSizeButtonColor;
-                                LFillColor = AppColors.defaultSizeButtonColor;
-                                MborderColor = AppColors.primaryColor;
-                                SborderColor = Colors.transparent;
-                                LborderColor = Colors.transparent;
-                                MColor = AppColors.primaryColor;
-                                SColor = Colors.white.withOpacity(0.52);
-                                LColor = Colors.white.withOpacity(0.52);
-                              });
-                            },
-                            style: TextButton.styleFrom(
-                              padding: EdgeInsets.zero,
-                            ),
-                            child: Text(
-                              "M",
-                              style: TextStyle(
-                                  fontSize: 20,
-                                  color: MColor,
-                                  fontFamily: "poppins"),
-                            )),
-                      ),
-                      Container(
-                        width: 110,
-                        height: 37,
-                        decoration: BoxDecoration(
-                            color: LFillColor,
-                            border: Border.all(width: 1, color: LborderColor),
-                            borderRadius: BorderRadius.circular(8)),
-                        child: TextButton(
-                            onPressed: () {
-                              setState(() {
-                                _isLSelected = true;
-                                LFillColor = Colors.black;
-                                SFillColor = AppColors.defaultSizeButtonColor;
-                                MFillColor = AppColors.defaultSizeButtonColor;
-                                LborderColor = AppColors.primaryColor;
-                                MborderColor = Colors.transparent;
-                                SborderColor = Colors.transparent;
-                                LColor = AppColors.primaryColor;
-                                MColor = Colors.white.withOpacity(0.52);
-                                SColor = Colors.white.withOpacity(0.52);
-                              });
-                            },
-                            style: TextButton.styleFrom(
-                              padding: EdgeInsets.zero,
-                            ),
-                            child: Text(
-                              "L",
-                              style: TextStyle(
-                                  fontSize: 20,
-                                  color: LColor,
-                                  fontFamily: "poppins"),
-                            )),
-                      )
                     ],
+                  ),
+                  Center(
+                    child: RatingBar.builder(
+                        initialRating: rating,
+                        allowHalfRating: true,
+                        unratedColor: AppColors.disabledCategoryColor,
+                        itemBuilder: (context, _) => Icon(
+                              Icons.star,
+                              color: AppColors.primaryColor,
+                            ),
+                        onRatingUpdate: (rate) {
+                          setState(() {
+                            rating = rate;
+                          });
+                          print(rating);
+                          Databaseservice().updateRate(
+                              widget.selectedCategoryKey,
+                              widget.selectedProductKey,
+                              rating);
+                        }),
                   )
+                  // const SizedBox(
+                  //   height: 15,
+                  // ),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //   children: [
+                  //     Container(
+                  //       width: 110,
+                  //       height: 37,
+                  //       decoration: BoxDecoration(
+                  //           color: SFillColor,
+                  //           border: Border.all(width: 1, color: SborderColor),
+                  //           borderRadius: BorderRadius.circular(8)),
+                  //       child: TextButton(
+                  //           onPressed: () {
+                  //             setState(() {
+                  //               _isSSelected = true;
+                  //               SFillColor = Colors.black;
+                  //               MFillColor = AppColors.defaultSizeButtonColor;
+                  //               LFillColor = AppColors.defaultSizeButtonColor;
+                  //               SborderColor = AppColors.primaryColor;
+                  //               MborderColor = Colors.transparent;
+                  //               LborderColor = Colors.transparent;
+                  //               SColor = AppColors.primaryColor;
+                  //               MColor = Colors.white.withOpacity(0.52);
+                  //               LColor = Colors.white.withOpacity(0.52);
+                  //             });
+                  //           },
+                  //           style: const ButtonStyle(
+                  //             padding: WidgetStatePropertyAll(EdgeInsets.zero),
+                  //           ),
+                  //           child: Text(
+                  //             "S",
+                  //             style: TextStyle(
+                  //                 fontSize: 20,
+                  //                 color: SColor,
+                  //                 fontFamily: "poppins"),
+                  //           )),
+                  //     ),
+                  //     Container(
+                  //       width: 110,
+                  //       height: 37,
+                  //       decoration: BoxDecoration(
+                  //           color: MFillColor,
+                  //           border: Border.all(width: 1, color: MborderColor),
+                  //           borderRadius: BorderRadius.circular(8)),
+                  //       child: TextButton(
+                  //           onPressed: () {
+                  //             setState(() {
+                  //               _isMSelected = true;
+                  //               MFillColor = Colors.black;
+                  //               SFillColor = AppColors.defaultSizeButtonColor;
+                  //               LFillColor = AppColors.defaultSizeButtonColor;
+                  //               MborderColor = AppColors.primaryColor;
+                  //               SborderColor = Colors.transparent;
+                  //               LborderColor = Colors.transparent;
+                  //               MColor = AppColors.primaryColor;
+                  //               SColor = Colors.white.withOpacity(0.52);
+                  //               LColor = Colors.white.withOpacity(0.52);
+                  //             });
+                  //           },
+                  //           style: TextButton.styleFrom(
+                  //             padding: EdgeInsets.zero,
+                  //           ),
+                  //           child: Text(
+                  //             "M",
+                  //             style: TextStyle(
+                  //                 fontSize: 20,
+                  //                 color: MColor,
+                  //                 fontFamily: "poppins"),
+                  //           )),
+                  //     ),
+                  //     Container(
+                  //       width: 110,
+                  //       height: 37,
+                  //       decoration: BoxDecoration(
+                  //           color: LFillColor,
+                  //           border: Border.all(width: 1, color: LborderColor),
+                  //           borderRadius: BorderRadius.circular(8)),
+                  //       child: TextButton(
+                  //           onPressed: () {
+                  //             setState(() {
+                  //               _isLSelected = true;
+                  //               LFillColor = Colors.black;
+                  //               SFillColor = AppColors.defaultSizeButtonColor;
+                  //               MFillColor = AppColors.defaultSizeButtonColor;
+                  //               LborderColor = AppColors.primaryColor;
+                  //               MborderColor = Colors.transparent;
+                  //               SborderColor = Colors.transparent;
+                  //               LColor = AppColors.primaryColor;
+                  //               MColor = Colors.white.withOpacity(0.52);
+                  //               SColor = Colors.white.withOpacity(0.52);
+                  //             });
+                  //           },
+                  //           style: TextButton.styleFrom(
+                  //             padding: EdgeInsets.zero,
+                  //           ),
+                  //           child: Text(
+                  //             "L",
+                  //             style: TextStyle(
+                  //                 fontSize: 20,
+                  //                 color: LColor,
+                  //                 fontFamily: "poppins"),
+                  //           )),
+                  //     )
+                  //   ],
+                  // )
                 ],
               ),
             ),
@@ -485,13 +583,25 @@ class _ProductDetailsState extends State<ProductDetails> {
                                         borderRadius:
                                             BorderRadius.circular(15)))),
                             onPressed: () {
-                              Auth().addToCart(
-                                  context,
-                                  FirebaseAuth.instance.currentUser!,
-                                  widget.category,
-                                  widget.name,
-                                  widget.price,
-                                  1);
+                              if (widget.stock > 0) {
+                                Auth().addToCart(
+                                    context,
+                                    FirebaseAuth.instance.currentUser!,
+                                    widget.category,
+                                    widget.name,
+                                    widget.price,
+                                    1,widget.selectedCategoryKey,widget.selectedProductKey);
+                                     Databaseservice().updateStock(
+                                                            widget.selectedCategoryKey,
+                                                            widget.selectedProductKey,
+                                                            product['stock'] -
+                                                                1);
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content:
+                                            Text("This item is out of stock")));
+                              }
                             },
                             child: const Text(
                               "Add to Cart",

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:ecommerce/Auth.dart';
 import 'package:ecommerce/DataBaseService.dart';
 import 'package:ecommerce/Model/Products_model.dart';
+import 'package:ecommerce/Pages/admin.dart';
 import 'package:ecommerce/Pages/signIn.dart';
 import 'package:ecommerce/Services.dart';
 import 'package:ecommerce/Widgets/String.dart';
@@ -56,7 +57,6 @@ class _MyHomePageState extends State<Adminhomepage> {
           selectedCategoryKey = categories.first['key'];
         }
         isLoading = false;
-       
       });
     } catch (e) {
       setState(() {
@@ -167,13 +167,21 @@ class _MyHomePageState extends State<Adminhomepage> {
               color: Colors.white,
             ),
           ),
-          actions: const [
-            Icon(
-              Icons.account_circle,
-              size: 40,
-              color: Colors.white,
+          actions: [
+            IconButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const AdminProfile()));
+              },
+              icon: const Icon(
+                Icons.account_circle,
+                size: 40,
+                color: Colors.white,
+              ),
             ),
-            SizedBox(
+            const SizedBox(
               width: 15,
             )
           ],
@@ -429,7 +437,7 @@ class _MyHomePageState extends State<Adminhomepage> {
                                                       width: 5,
                                                     ),
                                                     Text(
-                                                      product['rate'],
+                                                      "${product['rate']}",
                                                       style: const TextStyle(
                                                           color: Colors.yellow),
                                                     ),
